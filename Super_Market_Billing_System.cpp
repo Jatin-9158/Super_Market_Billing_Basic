@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 #include<fstream>
 #include<windows.h>
+#include<conio.h>
 using namespace std;
 const char* blueText = "\033[1;34m";
 const char* redText = "\x1B[31m";
@@ -72,20 +73,88 @@ void Item_List_Create()
         temp_Item->next=L1;
     }
 }
-#include <iostream>
-#include <cstdlib>
-#include <windows.h>
-
+class Login
+{
+  private:
+     string LoginID,Password;
+  public:
+     Login():LoginID(""),Password(""){};
+     void set_LoginId(string LoginID)
+     {
+       this->LoginID=LoginID;
+     }
+     void set_Password(string Password)
+     {
+        this->Password=Password;
+     }
+     string get_LoginId()
+     {
+        return LoginID;
+     }
+     string get_Password()
+     {
+        return Password;
+     }
+};
+/* Function For Password Masking */
+string Password_Hidden(string Password) 
+{  
+   char ch;
+   while(true)
+   {
+      ch=_getch();
+      if(ch==13)
+      {
+         break;
+      }
+      else if(ch==8 && !Password.empty())
+      {
+          cout<<"\b \b";
+          Password.pop_back();
+      }
+      else
+      {
+          cout<<"*";
+          Password.push_back(ch);
+      }
+   }
+   return Password;
+}
+/* Password Checker For Minimal Password Conditions*/
+bool Password_Check(string Password)
+{
+   if(Password.length()>=8)
+   {
+      for(char ch:Password)
+      {
+            if(isalnum(ch) && isupper(ch))
+            {
+               return true;
+            }
+            else
+            {
+              return false;
+            }
+      }
+   }
+   else
+   {
+     return false;
+   }
+      
+}
 void Bill(Customer_Registration Customer) {
     system("cls");
     string Item_Name;
     int Quantity;
+    time_t currentTime = time(0);
+    char* dateString = ctime(&currentTime);
     double Item_Price;
     double Amount = 0;
     bool exitRequested = false;
-
     cout << "\t\t\tBILL " << endl;
     cout << "\t*******************************************************" << endl;
+    cout<<"\tDate: " << dateString;
     cout << "\tName: " << Customer.get_Name() << endl;
     cout << "\tMobile No: " << Customer.get_Mobile_No() << endl;
     cout << "\t*******************************************************" << endl;
@@ -256,7 +325,7 @@ void Existing_Customer(Customer_Registration Customer)
    Shopping(Customer);
 }
 
-int main()
+void Customer_Portal()
 {
   Customer_Registration Customer;
   bool exit=false;
@@ -286,6 +355,94 @@ int main()
      }
   }
   ofstream outfile("e:/Project/Super_Market/Item_Details_Customer.txt");
-  outfile.close();
-  return 0;  
+  outfile.close(); 
+}
+/*Login Function For User*/
+void login()
+{
+   system("cls");
+   string LoginId,Pass;
+   cout<<"\tEnter the Login Id:";
+   cin>>LoginId;
+
+   cout<<"\tEnter Password:";
+   string Password=Password_Hidden(Pass);
+   ifstream infile("E:/Project/Super_Market/Login.txt");
+   if(!infile)
+   {
+      cout<<"\t Error: File Can't Open!"<<endl;
+   }
+   else
+   {
+      string line;
+      bool found=false;
+      while(getline(infile,line))
+      {
+         stringstream ss;
+         ss<<line;
+         string User_ID,User_Password;
+         char delimiter;
+         ss>>User_ID>>delimiter>>User_Password;
+         if(User_ID==LoginId&&User_Password==Password)
+         {
+           found=true;
+         }
+      }
+      if(found)
+      {
+           found=true;
+           cout<<"\n\tPlease Wait"<<endl;
+           cout<<"\t\t";
+           for(int i=0;i<10;i++)
+           {
+            cout<<".";
+            Sleep(100);
+           }
+           system("cls");
+           cout<<endl;
+           Customer_Portal();
+      }
+      else
+      {
+       cout<<redText<<"\n\tError:Invalid Credentials\n"<<resetText;
+
+      }
+      
+   }
+Sleep(1000);
+}
+int main()
+{
+  Login Log;
+
+  bool exit=false;
+  while(!exit)
+  {
+     system("cls");
+     int val;
+     start:
+      cout<<"\tWelcome to Employee Login Page"<<endl;
+      cout<<"\t************************************"<<endl;
+      cout<<"\t1.Login"<<endl;
+      cout<<"\t2.Exit"<<endl;
+      cout<<"\tEnter Choice:";
+      cin>>val;
+     if(val==1)
+     {
+       login();
+     }
+     else if(val==2)
+     {
+       exit=true;
+     }
+     else
+     {
+      cout<<"\n";
+      cout<<redText<<"\n\tError:Invalid Choice\n"<<resetText;
+      Sleep(100);
+      system("cls");
+      goto start;
+     }
+     Sleep(3000);
+   }
 }
